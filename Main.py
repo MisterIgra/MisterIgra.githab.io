@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 TOKEN = "8352098356:AAHS4ceBu0-ryWKv5HInp300pSMyIK0oWI0"  # Замените на ваш реальный токен
 
 # URL вашего мини-приложения (позже замените на реальный)
-WEB_APP_URL = "https://370552943b0a77ded67177902704cb7a.serveo.net"
+WEB_APP_URL = "https://MisterIgra.github.io/pixelbid-editor"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Отправляем сообщение с кнопкой для открытия мини-приложения"""

@@ -15,7 +15,7 @@ HOST = "0.0.0.0"
 # 1. Для localtunnel: https://pixelbid.loca.lt
 # 2. Для Serveo: https://pixelbid.serveo.net
 # 3. Для GitHub Pages: https://ваш_логин.github.io/pixelbid-editor
-PUBLIC_URL = "https://370552943b0a77ded67177902704cb7a.serveo.net"  # ЗАМЕНИТЕ НА РЕАЛЬНЫЙ URL
+PUBLIC_URL = "https://MisterIgra.github.io/pixelbid-editor"  # ЗАМЕНИТЕ НА РЕАЛЬНЫЙ URL
 
 # ==================================================
 # ВСТРОЕННОЕ ВЕБ-ПРИЛОЖЕНИЕ
