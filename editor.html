@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelBid - NFT Art Marketplace</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Общие стили */
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #2c3e50;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 15px;
+        }
+        
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 12px 20px;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .art-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .art-preview {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .art-info {
+            padding: 10px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Стили редактора будут здесь */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Главный экран -->
+        <div id="main-screen" class="screen active">
+            <header>
+                <div class="logo">PixelBid</div>
+                <div id="user-balance">0.00 TON</div>
+            </header>
+            
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-screen="editor">🎨 Создать</div>
+                <div class="nav-tab" data-screen="my-arts">🖼️ Мои арты</div>
+                <div class="nav-tab" data-screen="auctions">🏆 Аукционы</div>
+                <div class="nav-tab" data-screen="market">🛒 Магазин</div>
+                <div class="nav-tab" data-screen="profile">👤 Профиль</div>
+            </div>
+            
+            <div class="card">
+                <h2>Добро пожаловать!</h2>
+                <p>Создавайте, продавайте и коллекционируйте уникальные пиксельные арты</p>
+                <button class="btn btn-primary" data-screen="editor">
+                    🎨 Начать создание
+                </button>
+            </div>
+            
+            <h3>Популярные лоты</h3>
+            <div class="grid">
+                <div class="art-card">
+                    <div class="art-preview" style="background-color: #ffcc00;"></div>
+                    <div class="art-info">
+                        <strong>Космический кот</strong>
+                        <p>12.5 TON</p>
+                    </div>
+                </div>
+                <!-- Еще арты -->
+            </div>
+        </div>
+        
+        <!-- Экран редактора -->
+        <div id="editor-screen" class="screen">
+            <header>
+                <button class="btn btn-outline back-btn">← Назад</button>
+                <div class="logo">Редактор</div>
+                <button class="btn btn-primary" id="save-art-btn">💾 Сохранить</button>
+            </header>
+            
+            <div class="card">
+                <!-- Контент редактора будет здесь -->
+                <div id="pixel-editor"></div>
+            </div>
+        </div>
+        
+        <!-- Другие экраны -->
+        <div id="my-arts-screen" class="screen">
+            <!-- Галерея пользовательских артов -->
+        </div>
+        
+        <div id="auctions-screen" class="screen">
+            <!-- Управление аукционами -->
+        </div>
+        
+        <div id="market-screen" class="screen">
+            <!-- Рынок артов -->
+        </div>
+        
+        <div id="profile-screen" class="screen">
+            <!-- Профиль пользователя -->
+        </div>
+    </div>
+
+    <script>
+        // Основной объект приложения
+        const App = {
+            currentScreen: 'main',
+            userData: null,
+            
+            init() {
+                // Инициализация Telegram WebApp
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+                
+                // Получаем данные пользователя
+                this.userData = Telegram.WebApp.initDataUnsafe.user || {
+                    id: 123456789,
+                    first_name: 'Гость'
+                };
+                
+                // Настройка навигации
+                this.setupNavigation();
+                
+                // Загрузка данных пользователя
+                this.loadUserData();
+                
+                // Инициализация редактора
+                this.initEditor();
+            },
+            
+            setupNavigation() {
+                // Обработка кликов по табам
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.nav-tab').forEach(t => {
+                            t.classList.remove('active');
+                        });
+                        tab.classList.add('active');
+                        this.showScreen(tab.dataset.screen);
+                    });
+                });
+                
+                // Кнопки "Назад"
+                document.querySelectorAll('.back-btn').forEach(btn => {
+                    btn.addEventListener('click', () => this.showScreen('main'));
+                });
+                
+                // Кнопки перехода
+                document.querySelectorAll('[data-screen]').forEach(btn => {
+                    if (btn.classList.contains('nav-tab')) return;
+                    btn.addEventListener('click', () => {
+                        this.showScreen(btn.dataset.screen);
+                    });
+                });
+            },
+            
+            showScreen(screenId) {
+                // Скрываем все экраны
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                
+                // Показываем нужный экран
+                const screen = document.getElementById(`${screenId}-screen`);
+                if (screen) {
+                    screen.classList.add('active');
+                    this.currentScreen = screenId;
+                    
+                    // Инициализация экрана при первом открытии
+                    if (screenId === 'editor' && !this.editorInitialized) {
+                        this.initEditorCanvas();
+                    }
+                }
+            },
+            
+            loadUserData() {
+                // Заглушка - в реальности будет запрос к API
+                document.getElementById('user-balance').textContent = '5.25 TON';
+            },
+            
+            initEditor() {
+                // Инициализация будет при первом открытии редактора
+                this.editorInitialized = false;
+            },
+            
+            initEditorCanvas() {
+                // Код инициализации редактора пикселей
+                const editorContainer = document.getElementById('pixel-editor');
+                editorContainer.innerHTML = '<h2>Редактор пикселей</h2><p>Здесь будет сетка для рисования...</p>';
+                
+                // Помечаем как инициализированный
+                this.editorInitialized = true;
+            },
+            
+            saveArt() {
+                // Сохранение арта
+                const artData = {
+                    title: "Мой арт",
+                    pixels: "данные арта...",
+                    created: new Date().toISOString()
+                };
+                
+                // Отправка данных в бот
+                Telegram.WebApp.sendData(JSON.stringify(artData));
+                
+                // Закрытие приложения или возврат
+                // Telegram.WebApp.close();
+                this.showScreen('main');
+                
+                // Уведомление
+                Telegram.WebApp.showAlert('Арт успешно сохранен!');
+            }
+        };
+        
+        // Инициализация приложения при загрузке
+        document.addEventListener('DOMContentLoaded', () => App.init());
+        
+        // Привязка кнопки сохранения
+        document.getElementById('save-art-btn')?.addEventListener('click', () => App.saveArt());
+    </script>
+</body>
+</html>
